@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+	  html,
+      body {
+        font-family: Arial, sans-serif;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+      	height:100%;
+      }
+	</style>
+</head>
+<body>
+<div>
+	<input id="show-listings" type="button" value="show">
+	<input id="hide-listings" type="button" value="hide">
+</div>
+<div id="map"></div>
+<script>
+	var map;
+	var markers= [];
+
+	function initMap() {
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: {lat: 28.662345, lng: 77.141081},
+		zoom: 12
+	});
+
+	var locations = [{title: 'Loc1', location:{ lat: 28.631451, lng: 77.216667}}, {title: 'Loc2', location:{ lat: 28.531461, lng: 77.216677}}, {title: 'Loc3',  location:{lat: 28.431471, lng: 77.216687}}, {title: 'Loc4', location:{ lat: 28.331481, lng: 77.216697}}];
+	// var marker = new google.maps.Marker({
+	// 	position: cp,
+	// 	map: map,
+	// 	title: 'hi Sudeep'
+	// });
+
+	var infowindow = new google.maps.InfoWindow();
+	
+	function populateInfoWindow(marker, infowindow){
+		if(infowindow.marker != marker){
+			infowindow.marker = marker;
+			infowindow.setContent('<div>1' + marker.title + '</div>');
+			infowindow.open(map, marker);
+
+			// infowindow.addListener('closeclick', function(){
+			// 	infowindow.setMarker(null);
+			// });
+		}
+	}
+
+	for(i=0; i<locations.length; i++){
+		var position = locations[i].location;
+		var title = locations[i].title;
+
+		var marker = new google.maps.Marker({
+			map: map,
+			position: position,
+			title:title,
+			animation: google.maps.Animation.DROP,
+			id: i
+		});
+
+		markers.push(marker);
+		
+		marker.addListener('click', function(){
+			populateInfoWindow(this, infowindow);
+		});
+	}
+}
+
+function showListings() {
+	var bounds = new google.maps.LatLngBounds();
+
+	for(i=0; i<markers.length; i++){
+		markers[i].setMap(map);
+		bounds.extend(markers[i].position);
+	}
+	map.fitBounds(bounds);
+}
+
+function hideListings() {
+	//var bounds = new google.maps.LatLngBounds();
+
+	for(i=0; i<markers.length; i++){
+		markers[i].setMap(null);
+		//bounds.extend(marker.position);
+	}
+	//map.fitBounds(bounds);
+}
+
+
+	document.getElementById('show-listings').addEventListener('click', showListings);
+	document.getElementById('hide-listings').addEventListener('click', hideListings);
+</script>
+
+
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing&key=AIzaSyBgFTX2lUFx9S09QGSh_zD7T0EKRpF8h4o&v=3&callback=initMap">
+    </script>
+</body>
+</html>
